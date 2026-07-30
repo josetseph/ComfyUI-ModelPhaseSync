@@ -1,0 +1,20 @@
+[project]
+name = "model-phase-sync"
+description = "Stop ComfyUI from reloading CLIP/UNet/VAE between branches when batching multiple prompts in one workflow."
+version = "1.0.0"
+license = { file = "LICENSE" }
+requires-python = ">=3.8"
+dependencies = []
+classifiers = [
+    "Operating System :: OS Independent",
+    "Environment :: GPU :: NVIDIA CUDA",
+    "Environment :: GPU :: Apple Metal",
+]
+
+[project.urls]
+Repository = "https://github.com/josetseph/ComfyUI-ModelPhaseSync"
+"Bug Tracker" = "https://github.com/josetseph/ComfyUI-ModelPhaseSync/issues"
+
+[tool.comfy]
+PublisherId = "josetseph"
+DisplayName = "Model Phase Sync"

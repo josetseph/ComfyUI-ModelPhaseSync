@@ -1,0 +1,3 @@
+# Keep development-only paths out of the registry archive if added later.
+# (git-ignored files are already excluded.)
+.env
