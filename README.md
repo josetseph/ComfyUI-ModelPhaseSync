@@ -27,7 +27,11 @@ Batched multi-prompt graphs (several CLIP encodes → several samplers → sever
 
 ### ComfyUI-Manager / Registry
 
-Search for **Model Phase Sync** (or `model-phase-sync`) after it is published on the [Comfy Registry](https://registry.comfy.org).
+Search for **Model Phase Sync** (or `model-phase-sync`) on the [Comfy Registry](https://registry.comfy.org) / Manager:
+
+```bash
+comfy node install model-phase-sync
+```
 
 ### Manual
 
@@ -46,7 +50,29 @@ Restart ComfyUI. Nodes appear under **model_phase_sync**.
 4. New empty sockets appear automatically as you connect — you never scroll past hundreds of unused pins.
 5. (Optional) After a barrier, drop **Phase Unload** on a passthrough wire before the next heavy model loads.
 
-See [`workflows/Z-Image-Sync-Barrier-Example.json`](workflows/Z-Image-Sync-Barrier-Example.json) for a working Z-Image Turbo multi-prompt example.
+## Example workflows
+
+| File | Role |
+|------|------|
+| [`workflows/Z-Image-Sync-Barrier-Example.json`](workflows/Z-Image-Sync-Barrier-Example.json) | Full pipeline in one graph: CLIP barrier → sample → UNet barrier → VAE → Save Image |
+| [`workflows/Z-Image-Sample-And-Checkpoint-Latents.json`](workflows/Z-Image-Sample-And-Checkpoint-Latents.json) | **Part 1 — sample + checkpoint:** CLIP/UNet barriers, and `Save Latent` on each branch *before* the UNet barrier |
+| [`workflows/Z-Image-Decode-Checkpointed-Latents.json`](workflows/Z-Image-Decode-Checkpointed-Latents.json) | **Part 2 — finalize:** `Load Latent` → VAE Decode → Save Image (no samplers) |
+
+### Why the two-part latent checkpoint approach exists
+
+A UNet **Sync Barrier** waits until *every* sampler finishes before any VAE/Save Image can run. That is what stops model thrash — and it also means **no PNGs on disk until the whole sample phase is done**. If ComfyUI crashes mid-batch, finished branches only existed as in-memory latents.
+
+The fix is a **workflow** pattern, not a change to the barrier node:
+
+```text
+KSampler_i ──► Save Latent_i ──► UNet Barrier ──► (later) VAE / Save Image
+```
+
+Each `Save Latent` depends only on its own sampler, so it writes to disk as soon as that branch finishes. The barrier still gates VAE so you keep one clean UNet phase.
+
+Use **Part 1** for the heavy CLIP+UNet run. If anything fails afterward (or you want to decode later / on another machine), run **Part 2**: point each `Load Latent` at the files under `output/latents/`, decode with the same VAE, and save images — no need to resample.
+
+Prefer distinct `filename_prefix` values per branch (e.g. `latents/zimage_01`) so resume mapping stays obvious.
 
 ## Publishing / updates
 

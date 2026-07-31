@@ -1,0 +1,364 @@
+{
+  "2": {
+    "inputs": {
+      "shift": 3,
+      "model": [
+        "157",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "⚙️ Model Sampling"
+    }
+  },
+  "17": {
+    "inputs": {
+      "seed": [
+        "54",
+        0
+      ],
+      "steps": 8,
+      "cfg": 1,
+      "sampler_name": "res_multistep",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "2",
+        0
+      ],
+      "positive": [
+        "190",
+        0
+      ],
+      "negative": [
+        "182",
+        0
+      ],
+      "latent_image": [
+        "167",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "🎨 Generate Image"
+    }
+  },
+  "20": {
+    "inputs": {
+      "text": "A young anime girl with long flowing silver hair and bright expressive blue eyes, wearing a detailed school uniform with a navy blazer, white collared shirt, and red ribbon. She stands by an open classroom window in late afternoon, soft golden sunlight filtering through, cherry blossom petals drifting in the warm breeze. Medium shot, three-quarter angle, gentle rim light tracing her hair, detailed fabric folds and creases in the uniform, expressive calm face with soft shading, clean confident line work, professional anime illustration, rich saturated color, fine detail on hair strands and eyes, soft cinematic atmosphere, shallow depth of field with a softly blurred classroom background.",
+      "clip": [
+        "149",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "✨ Positive Prompt"
+    }
+  },
+  "54": {
+    "inputs": {
+      "seed": 497347554595577
+    },
+    "class_type": "Seed (rgthree)",
+    "_meta": {
+      "title": "🎲 Seed Control"
+    }
+  },
+  "149": {
+    "inputs": {
+      "clip_name": "qwen_3_4b.safetensors",
+      "type": "lumina2",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP"
+    }
+  },
+  "157": {
+    "inputs": {
+      "unet_name": "z_image_turbo_bf16.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "167": {
+    "inputs": {
+      "width": 1280,
+      "height": 720,
+      "batch_size": 1
+    },
+    "class_type": "EmptySD3LatentImage",
+    "_meta": {
+      "title": "📐 Image Size"
+    }
+  },
+  "174": {
+    "inputs": {
+      "seed": [
+        "54",
+        0
+      ],
+      "steps": 8,
+      "cfg": 1,
+      "sampler_name": "res_multistep",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "2",
+        0
+      ],
+      "positive": [
+        "190",
+        1
+      ],
+      "negative": [
+        "183",
+        0
+      ],
+      "latent_image": [
+        "167",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "🎨 Generate Image"
+    }
+  },
+  "175": {
+    "inputs": {
+      "text": "Dramatic black and white high fashion studio portrait, close-up bust shot, pale platinum blonde woman with sleek low ponytail, head tilted upward, eyes softly closed, wearing a fitted black turtleneck top. A large translucent pale white butterfly hovers gently right at her lips, delicate detailed wing veins visible. Hard rim light creates glowing bright white halo around her hair and face, deep inky pure black minimalist background, stark high contrast chiaroscuro lighting, film grain texture, moody ethereal atmosphere, monochrome, editorial fashion photography, shot on 35mm film, soft subtle skin texture, sharp focus on butterfly and facial profile, vertical composition, minimalist dark aesthetic, artistic surreal fashion",
+      "clip": [
+        "149",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "✨ Positive Prompt"
+    }
+  },
+  "179": {
+    "inputs": {
+      "seed": [
+        "54",
+        0
+      ],
+      "steps": 8,
+      "cfg": 1,
+      "sampler_name": "res_multistep",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "2",
+        0
+      ],
+      "positive": [
+        "190",
+        2
+      ],
+      "negative": [
+        "184",
+        0
+      ],
+      "latent_image": [
+        "167",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "🎨 Generate Image"
+    }
+  },
+  "180": {
+    "inputs": {
+      "text": "Latina female with thick wavy hair, harbor boats and pastel houses behind. Breezy seaside light, warm tones, cinematic close-up. ",
+      "clip": [
+        "149",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "✨ Positive Prompt"
+    }
+  },
+  "182": {
+    "inputs": {
+      "conditioning": [
+        "20",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "Conditioning Zero Out"
+    }
+  },
+  "183": {
+    "inputs": {
+      "conditioning": [
+        "175",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "Conditioning Zero Out"
+    }
+  },
+  "184": {
+    "inputs": {
+      "conditioning": [
+        "180",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "Conditioning Zero Out"
+    }
+  },
+  "190": {
+    "inputs": {
+      "in_1": [
+        "20",
+        0
+      ],
+      "in_2": [
+        "175",
+        0
+      ],
+      "in_3": [
+        "180",
+        0
+      ],
+      "in_4": [
+        "192",
+        0
+      ]
+    },
+    "class_type": "SyncBarrierN",
+    "_meta": {
+      "title": "🔗 CLIP Barrier (N-way)"
+    }
+  },
+  "192": {
+    "inputs": {
+      "text": "Ultra low angle action shot, male soccer player jumping mid-air high kick, clear vivid blue sky background, forced perspective blurry foreground cleat (white & electric yellow), sharp focused upper body, maroon jersey + white shorts, fully outstretched leg striking a standard soccer ball, harsh direct sunlight, heavy dark shadows, stadium poles & treetops at frame bottom, high contrast sports photography, visible coarse film grain, dynamic movement",
+      "clip": [
+        "149",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "✨ Positive Prompt"
+    }
+  },
+  "193": {
+    "inputs": {
+      "seed": [
+        "54",
+        0
+      ],
+      "steps": 8,
+      "cfg": 1,
+      "sampler_name": "res_multistep",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "2",
+        0
+      ],
+      "positive": [
+        "190",
+        3
+      ],
+      "negative": [
+        "194",
+        0
+      ],
+      "latent_image": [
+        "167",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "🎨 Generate Image"
+    }
+  },
+  "194": {
+    "inputs": {
+      "conditioning": [
+        "192",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "Conditioning Zero Out"
+    }
+  },
+  "205": {
+    "inputs": {
+      "filename_prefix": "latents/",
+      "samples": [
+        "17",
+        0
+      ]
+    },
+    "class_type": "SaveLatent",
+    "_meta": {
+      "title": "Save Latent"
+    }
+  },
+  "206": {
+    "inputs": {
+      "filename_prefix": "latents/",
+      "samples": [
+        "193",
+        0
+      ]
+    },
+    "class_type": "SaveLatent",
+    "_meta": {
+      "title": "Save Latent"
+    }
+  },
+  "207": {
+    "inputs": {
+      "filename_prefix": "latents/",
+      "samples": [
+        "174",
+        0
+      ]
+    },
+    "class_type": "SaveLatent",
+    "_meta": {
+      "title": "Save Latent"
+    }
+  },
+  "208": {
+    "inputs": {
+      "filename_prefix": "latents/",
+      "samples": [
+        "179",
+        0
+      ]
+    },
+    "class_type": "SaveLatent",
+    "_meta": {
+      "title": "Save Latent"
+    }
+  }
+}
