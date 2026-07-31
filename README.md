@@ -57,11 +57,14 @@ Restart ComfyUI. Nodes appear under **model_phase_sync**.
 You do not have to keep CLIP, UNet, and VAE in one graph. Checkpoint between phases:
 
 ```text
-Workflow A (CLIP only)
-  CLIPTextEncode → Save Conditioning  →  (files under output/conditionings/)
+1) CLIP only
+   CLIPTextEncode → Save Conditioning  →  output/conditionings/
 
-Workflow B (diffusion)
-  Load Conditioning → KSampler → Save Latent / VAE / Save Image
+2) Diffusion only
+   Load Conditioning → KSampler → Save Latent  →  output/latents/
+
+3) VAE only
+   Load Latent (Upload) → VAE Decode → Save Image
 ```
 
 **Save Conditioning** writes a `.conditioning` file (passthrough so you can still wire a barrier in the same graph). **Load Conditioning** and **Load Latent (Upload)** each have a **choose file to upload** button (Comfy’s built-in Load Image upload only works for images; stock Load Latent has none). Uploads go to `input/conditionings/` or `input/latents/`. You can also use the dropdown or paste a path. Use distinct `filename_prefix` values per prompt (e.g. `conditionings/prompt_01`, `latents/zimage_01`).
@@ -72,11 +75,23 @@ Conditioning save/load is inspired by the idea behind [ComfyUI-SaveAndLoadPrompt
 
 ## Example workflows
 
+### One-shot / barrier batching
+
 | File | Role |
 |------|------|
 | [`workflows/Z-Image-Sync-Barrier-Example.json`](workflows/Z-Image-Sync-Barrier-Example.json) | Full pipeline in one graph: CLIP barrier → sample → UNet barrier → VAE → Save Image |
 | [`workflows/Z-Image-Sample-And-Checkpoint-Latents.json`](workflows/Z-Image-Sample-And-Checkpoint-Latents.json) | **Sample + checkpoint:** CLIP/UNet barriers, and `Save Latent` on each branch *before* the UNet barrier |
 | [`workflows/Z-Image-Decode-Checkpointed-Latents.json`](workflows/Z-Image-Decode-Checkpointed-Latents.json) | **Finalize:** `Load Latent` → VAE Decode → Save Image (no samplers) |
+
+### Split phase pipelines (CLIP → diffusion → VAE)
+
+Run these in order. Each stage only needs its own model in memory.
+
+| File | Role |
+|------|------|
+| [`workflows/Z-Image-Phase-CLIP-Save-Conditioning.json`](workflows/Z-Image-Phase-CLIP-Save-Conditioning.json) | **CLIP:** encode prompts → `Save Conditioning` |
+| [`workflows/Z-Image-Phase-Diffusion-Save-Latents.json`](workflows/Z-Image-Phase-Diffusion-Save-Latents.json) | **Diffusion:** `Load Conditioning` → KSampler → `Save Latent` |
+| [`workflows/Z-Image-Phase-VAE-Save-Images.json`](workflows/Z-Image-Phase-VAE-Save-Images.json) | **VAE:** `Load Latent (Upload)` → VAE Decode → Save Image |
 
 ### Why latent checkpoints exist (inside one sample workflow)
 
@@ -86,7 +101,7 @@ A UNet **Sync Barrier** waits until *every* sampler finishes before any VAE/Save
 KSampler_i ──► Save Latent_i ──► UNet Barrier ──► (later) VAE / Save Image
 ```
 
-Each `Save Latent` depends only on its own sampler, so it writes as soon as that branch finishes. Prefer distinct prefixes (e.g. `latents/zimage_01`). Decode later with the finalize workflow — no resampling.
+Each `Save Latent` depends only on its own sampler, so it writes as soon as that branch finishes. Prefer distinct prefixes (e.g. `latents/zimage_01`). Decode later with the finalize / VAE-phase workflow — no resampling.
 
 ## Publishing / updates
 

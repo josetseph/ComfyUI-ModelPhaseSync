@@ -1,0 +1,117 @@
+{
+  "20": {
+    "inputs": {
+      "text": "A young anime girl with long flowing silver hair and bright expressive blue eyes, wearing a detailed school uniform with a navy blazer, white collared shirt, and red ribbon. She stands by an open classroom window in late afternoon, soft golden sunlight filtering through, cherry blossom petals drifting in the warm breeze. Medium shot, three-quarter angle, gentle rim light tracing her hair, detailed fabric folds and creases in the uniform, expressive calm face with soft shading, clean confident line work, professional anime illustration, rich saturated color, fine detail on hair strands and eyes, soft cinematic atmosphere, shallow depth of field with a softly blurred classroom background.",
+      "clip": [
+        "149",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "✨ Positive Prompt"
+    }
+  },
+  "149": {
+    "inputs": {
+      "clip_name": "qwen_3_4b.safetensors",
+      "type": "lumina2",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP"
+    }
+  },
+  "175": {
+    "inputs": {
+      "text": "Dramatic black and white high fashion studio portrait, close-up bust shot, pale platinum blonde woman with sleek low ponytail, head tilted upward, eyes softly closed, wearing a fitted black turtleneck top. A large translucent pale white butterfly hovers gently right at her lips, delicate detailed wing veins visible. Hard rim light creates glowing bright white halo around her hair and face, deep inky pure black minimalist background, stark high contrast chiaroscuro lighting, film grain texture, moody ethereal atmosphere, monochrome, editorial fashion photography, shot on 35mm film, soft subtle skin texture, sharp focus on butterfly and facial profile, vertical composition, minimalist dark aesthetic, artistic surreal fashion",
+      "clip": [
+        "149",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "✨ Positive Prompt"
+    }
+  },
+  "180": {
+    "inputs": {
+      "text": "Latina female with thick wavy hair, harbor boats and pastel houses behind. Breezy seaside light, warm tones, cinematic close-up. ",
+      "clip": [
+        "149",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "✨ Positive Prompt"
+    }
+  },
+  "192": {
+    "inputs": {
+      "text": "Ultra low angle action shot, male soccer player jumping mid-air high kick, clear vivid blue sky background, forced perspective blurry foreground cleat (white & electric yellow), sharp focused upper body, maroon jersey + white shorts, fully outstretched leg striking a standard soccer ball, harsh direct sunlight, heavy dark shadows, stadium poles & treetops at frame bottom, high contrast sports photography, visible coarse film grain, dynamic movement",
+      "clip": [
+        "149",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "✨ Positive Prompt"
+    }
+  },
+  "211": {
+    "inputs": {
+      "filename_prefix": "conditionings/cond",
+      "conditioning": [
+        "20",
+        0
+      ]
+    },
+    "class_type": "SaveConditioning",
+    "_meta": {
+      "title": "Save Conditioning"
+    }
+  },
+  "212": {
+    "inputs": {
+      "filename_prefix": "conditionings/cond",
+      "conditioning": [
+        "175",
+        0
+      ]
+    },
+    "class_type": "SaveConditioning",
+    "_meta": {
+      "title": "Save Conditioning"
+    }
+  },
+  "213": {
+    "inputs": {
+      "filename_prefix": "conditionings/cond",
+      "conditioning": [
+        "180",
+        0
+      ]
+    },
+    "class_type": "SaveConditioning",
+    "_meta": {
+      "title": "Save Conditioning"
+    }
+  },
+  "214": {
+    "inputs": {
+      "filename_prefix": "conditionings/cond",
+      "conditioning": [
+        "192",
+        0
+      ]
+    },
+    "class_type": "SaveConditioning",
+    "_meta": {
+      "title": "Save Conditioning"
+    }
+  }
+}

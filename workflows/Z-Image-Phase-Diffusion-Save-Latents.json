@@ -1,0 +1,317 @@
+{
+  "2": {
+    "inputs": {
+      "shift": 3,
+      "model": [
+        "157",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "⚙️ Model Sampling"
+    }
+  },
+  "17": {
+    "inputs": {
+      "seed": [
+        "54",
+        0
+      ],
+      "steps": 8,
+      "cfg": 1,
+      "sampler_name": "res_multistep",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "2",
+        0
+      ],
+      "positive": [
+        "209",
+        0
+      ],
+      "negative": [
+        "182",
+        0
+      ],
+      "latent_image": [
+        "167",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "🎨 Generate Image"
+    }
+  },
+  "54": {
+    "inputs": {
+      "seed": 497347554595577
+    },
+    "class_type": "Seed (rgthree)",
+    "_meta": {
+      "title": "🎲 Seed Control"
+    }
+  },
+  "157": {
+    "inputs": {
+      "unet_name": "z_image_turbo_bf16.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "167": {
+    "inputs": {
+      "width": 1280,
+      "height": 720,
+      "batch_size": 1
+    },
+    "class_type": "EmptySD3LatentImage",
+    "_meta": {
+      "title": "📐 Image Size"
+    }
+  },
+  "174": {
+    "inputs": {
+      "seed": [
+        "54",
+        0
+      ],
+      "steps": 8,
+      "cfg": 1,
+      "sampler_name": "res_multistep",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "2",
+        0
+      ],
+      "positive": [
+        "210",
+        0
+      ],
+      "negative": [
+        "183",
+        0
+      ],
+      "latent_image": [
+        "167",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "🎨 Generate Image"
+    }
+  },
+  "179": {
+    "inputs": {
+      "seed": [
+        "54",
+        0
+      ],
+      "steps": 8,
+      "cfg": 1,
+      "sampler_name": "res_multistep",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "2",
+        0
+      ],
+      "positive": [
+        "211",
+        0
+      ],
+      "negative": [
+        "184",
+        0
+      ],
+      "latent_image": [
+        "167",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "🎨 Generate Image"
+    }
+  },
+  "182": {
+    "inputs": {
+      "conditioning": [
+        "209",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "Conditioning Zero Out"
+    }
+  },
+  "183": {
+    "inputs": {
+      "conditioning": [
+        "210",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "Conditioning Zero Out"
+    }
+  },
+  "184": {
+    "inputs": {
+      "conditioning": [
+        "211",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "Conditioning Zero Out"
+    }
+  },
+  "193": {
+    "inputs": {
+      "seed": [
+        "54",
+        0
+      ],
+      "steps": 8,
+      "cfg": 1,
+      "sampler_name": "res_multistep",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "2",
+        0
+      ],
+      "positive": [
+        "212",
+        0
+      ],
+      "negative": [
+        "194",
+        0
+      ],
+      "latent_image": [
+        "167",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "🎨 Generate Image"
+    }
+  },
+  "194": {
+    "inputs": {
+      "conditioning": [
+        "212",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "Conditioning Zero Out"
+    }
+  },
+  "205": {
+    "inputs": {
+      "filename_prefix": "latents/latent",
+      "samples": [
+        "17",
+        0
+      ]
+    },
+    "class_type": "SaveLatent",
+    "_meta": {
+      "title": "Save Latent"
+    }
+  },
+  "206": {
+    "inputs": {
+      "filename_prefix": "latents/latent",
+      "samples": [
+        "193",
+        0
+      ]
+    },
+    "class_type": "SaveLatent",
+    "_meta": {
+      "title": "Save Latent"
+    }
+  },
+  "207": {
+    "inputs": {
+      "filename_prefix": "latents/latent",
+      "samples": [
+        "174",
+        0
+      ]
+    },
+    "class_type": "SaveLatent",
+    "_meta": {
+      "title": "Save Latent"
+    }
+  },
+  "208": {
+    "inputs": {
+      "filename_prefix": "latents/latent",
+      "samples": [
+        "179",
+        0
+      ]
+    },
+    "class_type": "SaveLatent",
+    "_meta": {
+      "title": "Save Latent"
+    }
+  },
+  "209": {
+    "inputs": {
+      "conditioning_file": "cond_00001_.conditioning",
+      "path": ""
+    },
+    "class_type": "LoadConditioning",
+    "_meta": {
+      "title": "Load Conditioning"
+    }
+  },
+  "210": {
+    "inputs": {
+      "conditioning_file": "cond_00002_.conditioning",
+      "path": ""
+    },
+    "class_type": "LoadConditioning",
+    "_meta": {
+      "title": "Load Conditioning"
+    }
+  },
+  "211": {
+    "inputs": {
+      "conditioning_file": "cond_00003_.conditioning",
+      "path": ""
+    },
+    "class_type": "LoadConditioning",
+    "_meta": {
+      "title": "Load Conditioning"
+    }
+  },
+  "212": {
+    "inputs": {
+      "conditioning_file": "cond_00004_.conditioning",
+      "path": ""
+    },
+    "class_type": "LoadConditioning",
+    "_meta": {
+      "title": "Load Conditioning"
+    }
+  }
+}

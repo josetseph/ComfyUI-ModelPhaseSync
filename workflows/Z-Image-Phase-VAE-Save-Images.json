@@ -1,0 +1,167 @@
+{
+  "11": {
+    "inputs": {
+      "samples": [
+        "216",
+        0
+      ],
+      "vae": [
+        "127",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "🎨 VAE Decode"
+    }
+  },
+  "127": {
+    "inputs": {
+      "vae_name": "ae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "151": {
+    "inputs": {
+      "filename_prefix": "Images/Z-Image",
+      "images": [
+        "11",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "172": {
+    "inputs": {
+      "filename_prefix": "Images/Z-Image",
+      "images": [
+        "173",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "173": {
+    "inputs": {
+      "samples": [
+        "218",
+        0
+      ],
+      "vae": [
+        "127",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "🎨 VAE Decode"
+    }
+  },
+  "177": {
+    "inputs": {
+      "filename_prefix": "Images/Z-Image",
+      "images": [
+        "178",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "178": {
+    "inputs": {
+      "samples": [
+        "217",
+        0
+      ],
+      "vae": [
+        "127",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "🎨 VAE Decode"
+    }
+  },
+  "195": {
+    "inputs": {
+      "samples": [
+        "219",
+        0
+      ],
+      "vae": [
+        "127",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "🎨 VAE Decode"
+    }
+  },
+  "196": {
+    "inputs": {
+      "filename_prefix": "Images/Z-Image",
+      "images": [
+        "195",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "216": {
+    "inputs": {
+      "latent_file": "no .latent files found — run Save Latent first (or upload / put files in input/latents or output/latents)",
+      "path": ""
+    },
+    "class_type": "LoadLatentUpload",
+    "_meta": {
+      "title": "Load Latent (Upload)"
+    }
+  },
+  "217": {
+    "inputs": {
+      "latent_file": "no .latent files found — run Save Latent first (or upload / put files in input/latents or output/latents)",
+      "path": ""
+    },
+    "class_type": "LoadLatentUpload",
+    "_meta": {
+      "title": "Load Latent (Upload)"
+    }
+  },
+  "218": {
+    "inputs": {
+      "latent_file": "no .latent files found — run Save Latent first (or upload / put files in input/latents or output/latents)",
+      "path": ""
+    },
+    "class_type": "LoadLatentUpload",
+    "_meta": {
+      "title": "Load Latent (Upload)"
+    }
+  },
+  "219": {
+    "inputs": {
+      "latent_file": "no .latent files found — run Save Latent first (or upload / put files in input/latents or output/latents)",
+      "path": ""
+    },
+    "class_type": "LoadLatentUpload",
+    "_meta": {
+      "title": "Load Latent (Upload)"
+    }
+  }
+}
