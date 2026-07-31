@@ -1,7 +1,7 @@
 [project]
 name = "model-phase-sync"
 description = "Stop ComfyUI from reloading CLIP/UNet/VAE between branches when batching multiple prompts in one workflow."
-version = "1.1.0"
+version = "1.1.3"
 license = { text = "MIT License" }
 requires-python = ">=3.8"
 dependencies = []

@@ -15,6 +15,7 @@ Batched multi-prompt graphs (several CLIP encodes → several samplers → sever
 | **Sync Barrier** | True execution barrier. Outputs only resolve once all *connected* inputs are ready, so Comfy finishes an entire phase before the next starts. Sockets auto-grow as you wire branches (up to 1000). |
 | **Phase Unload** | Optional companion. Passthrough that explicitly evicts models between phases so you are not fully dependent on ComfyUI’s heuristics. |
 | **Save / Load Conditioning** | Checkpoint CLIP `CONDITIONING` to disk (and reload it) so you can run text encode as its own workflow, then sample later without CLIP in memory. |
+| **Load Latent (Upload)** | Same idea for `.latent` files — built-in Load Latent has no upload button; this one does. Compatible with ComfyUI **Save Latent**. |
 
 ### Before / after (3-image batch, Z-Image Turbo on MPS)
 
@@ -63,7 +64,7 @@ Workflow B (diffusion)
   Load Conditioning → KSampler → Save Latent / VAE / Save Image
 ```
 
-**Save Conditioning** writes a `.conditioning` file (passthrough so you can still wire a barrier in the same graph). **Load Conditioning** lists files from `output/conditionings/` and `input/conditionings/`. Use distinct `filename_prefix` values per prompt (e.g. `conditionings/prompt_01`).
+**Save Conditioning** writes a `.conditioning` file (passthrough so you can still wire a barrier in the same graph). **Load Conditioning** and **Load Latent (Upload)** each have a **choose file to upload** button (Comfy’s built-in Load Image upload only works for images; stock Load Latent has none). Uploads go to `input/conditionings/` or `input/latents/`. You can also use the dropdown or paste a path. Use distinct `filename_prefix` values per prompt (e.g. `conditionings/prompt_01`, `latents/zimage_01`).
 
 That way each workflow only loads the model it needs — no Sync Barrier required *between* workflows, because the handoff is files on disk. Barriers still help when you batch many branches *inside* one workflow.
 
