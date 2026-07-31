@@ -14,6 +14,7 @@ Batched multi-prompt graphs (several CLIP encodes → several samplers → sever
 |------|----------------|
 | **Sync Barrier** | True execution barrier. Outputs only resolve once all *connected* inputs are ready, so Comfy finishes an entire phase before the next starts. Sockets auto-grow as you wire branches (up to 1000). |
 | **Phase Unload** | Optional companion. Passthrough that explicitly evicts models between phases so you are not fully dependent on ComfyUI’s heuristics. |
+| **Save / Load Conditioning** | Checkpoint CLIP `CONDITIONING` to disk (and reload it) so you can run text encode as its own workflow, then sample later without CLIP in memory. |
 
 ### Before / after (3-image batch, Z-Image Turbo on MPS)
 
@@ -50,29 +51,41 @@ Restart ComfyUI. Nodes appear under **model_phase_sync**.
 4. New empty sockets appear automatically as you connect — you never scroll past hundreds of unused pins.
 5. (Optional) After a barrier, drop **Phase Unload** on a passthrough wire before the next heavy model loads.
 
+## Split phases across workflows
+
+You do not have to keep CLIP, UNet, and VAE in one graph. Checkpoint between phases:
+
+```text
+Workflow A (CLIP only)
+  CLIPTextEncode → Save Conditioning  →  (files under output/conditionings/)
+
+Workflow B (diffusion)
+  Load Conditioning → KSampler → Save Latent / VAE / Save Image
+```
+
+**Save Conditioning** writes a `.conditioning` file (passthrough so you can still wire a barrier in the same graph). **Load Conditioning** lists files from `output/conditionings/` and `input/conditionings/`. Use distinct `filename_prefix` values per prompt (e.g. `conditionings/prompt_01`).
+
+That way each workflow only loads the model it needs — no Sync Barrier required *between* workflows, because the handoff is files on disk. Barriers still help when you batch many branches *inside* one workflow.
+
+Conditioning save/load is inspired by the idea behind [ComfyUI-SaveAndLoadPromptCondition](https://github.com/endman100/ComfyUI-SaveAndLoadPromptCondition) (not on the Registry); this pack ships a clean MIT implementation aimed at phase-split batching.
+
 ## Example workflows
 
 | File | Role |
 |------|------|
 | [`workflows/Z-Image-Sync-Barrier-Example.json`](workflows/Z-Image-Sync-Barrier-Example.json) | Full pipeline in one graph: CLIP barrier → sample → UNet barrier → VAE → Save Image |
-| [`workflows/Z-Image-Sample-And-Checkpoint-Latents.json`](workflows/Z-Image-Sample-And-Checkpoint-Latents.json) | **Part 1 — sample + checkpoint:** CLIP/UNet barriers, and `Save Latent` on each branch *before* the UNet barrier |
-| [`workflows/Z-Image-Decode-Checkpointed-Latents.json`](workflows/Z-Image-Decode-Checkpointed-Latents.json) | **Part 2 — finalize:** `Load Latent` → VAE Decode → Save Image (no samplers) |
+| [`workflows/Z-Image-Sample-And-Checkpoint-Latents.json`](workflows/Z-Image-Sample-And-Checkpoint-Latents.json) | **Sample + checkpoint:** CLIP/UNet barriers, and `Save Latent` on each branch *before* the UNet barrier |
+| [`workflows/Z-Image-Decode-Checkpointed-Latents.json`](workflows/Z-Image-Decode-Checkpointed-Latents.json) | **Finalize:** `Load Latent` → VAE Decode → Save Image (no samplers) |
 
-### Why the two-part latent checkpoint approach exists
+### Why latent checkpoints exist (inside one sample workflow)
 
 A UNet **Sync Barrier** waits until *every* sampler finishes before any VAE/Save Image can run. That is what stops model thrash — and it also means **no PNGs on disk until the whole sample phase is done**. If ComfyUI crashes mid-batch, finished branches only existed as in-memory latents.
-
-The fix is a **workflow** pattern, not a change to the barrier node:
 
 ```text
 KSampler_i ──► Save Latent_i ──► UNet Barrier ──► (later) VAE / Save Image
 ```
 
-Each `Save Latent` depends only on its own sampler, so it writes to disk as soon as that branch finishes. The barrier still gates VAE so you keep one clean UNet phase.
-
-Use **Part 1** for the heavy CLIP+UNet run. If anything fails afterward (or you want to decode later / on another machine), run **Part 2**: point each `Load Latent` at the files under `output/latents/`, decode with the same VAE, and save images — no need to resample.
-
-Prefer distinct `filename_prefix` values per branch (e.g. `latents/zimage_01`) so resume mapping stays obvious.
+Each `Save Latent` depends only on its own sampler, so it writes as soon as that branch finishes. Prefer distinct prefixes (e.g. `latents/zimage_01`). Decode later with the finalize workflow — no resampling.
 
 ## Publishing / updates
 
