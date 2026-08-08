@@ -222,6 +222,26 @@ def _tensors_to_cpu(obj):
     return obj
 
 
+def _atomic_write(final_path: str, write_fn) -> None:
+    """Write via a temp sibling, then os.replace so the final path appears only when complete.
+
+    Avoids watchers / Load nodes seeing a 0-byte or truncated file mid-write.
+    """
+    directory = os.path.dirname(final_path) or "."
+    os.makedirs(directory, exist_ok=True)
+    partial_path = f"{final_path}.partial.{os.getpid()}"
+    try:
+        write_fn(partial_path)
+        os.replace(partial_path, final_path)
+    except Exception:
+        try:
+            if os.path.exists(partial_path):
+                os.remove(partial_path)
+        except OSError:
+            pass
+        raise
+
+
 class SyncBarrierN:
     """True barrier for up to MAX_SLOTS branches.
 
@@ -342,7 +362,11 @@ class SaveConditioning:
         path = os.path.join(full_output_folder, file)
 
         payload = _tensors_to_cpu(conditioning)
-        torch.save({"conditioning": payload, "format_version": 1}, path)
+
+        def _write(partial_path: str) -> None:
+            torch.save({"conditioning": payload, "format_version": 1}, partial_path)
+
+        _atomic_write(path, _write)
         _invalidate_conditioning_file_cache()
         print(f"[ModelPhaseSync] Saved conditioning → {path}")
 
@@ -499,12 +523,146 @@ class LoadLatentUpload:
         return True
 
 
+class SaveLatentAtomic:
+    """Save LATENT like ComfyUI Save Latent, but with an atomic final rename.
+
+    Compatible with built-in Load Latent and Load Latent (Upload). Prefer this
+    when another process watches output/latents/ for newly finished files.
+    """
+
+    def __init__(self):
+        self.output_dir = folder_paths.get_output_directory()
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "samples": ("LATENT",),
+                "filename_prefix": ("STRING", {"default": "latents/ComfyUI"}),
+            },
+            "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
+        }
+
+    RETURN_TYPES = ("LATENT",)
+    RETURN_NAMES = ("samples",)
+    FUNCTION = "save"
+    OUTPUT_NODE = True
+    CATEGORY = "model_phase_sync"
+
+    def save(self, samples, filename_prefix="latents/ComfyUI", prompt=None, extra_pnginfo=None):
+        import json
+
+        import comfy.utils
+        from comfy.cli_args import args
+
+        full_output_folder, filename, counter, subfolder, filename_prefix = (
+            folder_paths.get_save_image_path(filename_prefix, self.output_dir)
+        )
+        file = f"{filename}_{counter:05}_.latent"
+        path = os.path.join(full_output_folder, file)
+
+        metadata = None
+        if not args.disable_metadata:
+            prompt_info = json.dumps(prompt) if prompt is not None else ""
+            metadata = {"prompt": prompt_info}
+            if extra_pnginfo is not None:
+                for key, value in extra_pnginfo.items():
+                    metadata[key] = json.dumps(value)
+
+        output = {
+            "latent_tensor": samples["samples"].contiguous(),
+            "latent_format_version_0": torch.tensor([]),
+        }
+
+        def _write(partial_path: str) -> None:
+            comfy.utils.save_torch_file(output, partial_path, metadata=metadata)
+
+        _atomic_write(path, _write)
+        _invalidate_latent_file_cache()
+        print(f"[ModelPhaseSync] Saved latent → {path}")
+
+        results = [{"filename": file, "subfolder": subfolder, "type": "output"}]
+        return {"ui": {"latents": results}, "result": (samples,)}
+
+
+class SaveImageAtomic:
+    """Save IMAGE like a minimal Save Image, with atomic final rename.
+
+    Prefer this when another process watches the output folder and must not
+    pick up a PNG that is still being written.
+    """
+
+    def __init__(self):
+        self.output_dir = folder_paths.get_output_directory()
+        self.prefix_append = ""
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "images": ("IMAGE",),
+                "filename_prefix": ("STRING", {"default": "ComfyUI"}),
+            },
+            "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
+        }
+
+    RETURN_TYPES = ()
+    FUNCTION = "save"
+    OUTPUT_NODE = True
+    CATEGORY = "model_phase_sync"
+
+    def save(self, images, filename_prefix="ComfyUI", prompt=None, extra_pnginfo=None):
+        import json
+        import numpy as np
+        from PIL import Image
+        from PIL.PngImagePlugin import PngInfo
+
+        from comfy.cli_args import args
+
+        filename_prefix += self.prefix_append
+        full_output_folder, filename, counter, subfolder, filename_prefix = (
+            folder_paths.get_save_image_path(
+                filename_prefix,
+                self.output_dir,
+                images[0].shape[1],
+                images[0].shape[0],
+            )
+        )
+        results = []
+        for batch_number, image in enumerate(images):
+            i = 255.0 * image.cpu().numpy()
+            img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
+            metadata = None
+            if not args.disable_metadata:
+                metadata = PngInfo()
+                if prompt is not None:
+                    metadata.add_text("prompt", json.dumps(prompt))
+                if extra_pnginfo is not None:
+                    for key, value in extra_pnginfo.items():
+                        metadata.add_text(key, json.dumps(value))
+
+            file = f"{filename}_{counter:05}_.png"
+            path = os.path.join(full_output_folder, file)
+
+            def _write(partial_path: str, _img=img, _metadata=metadata) -> None:
+                _img.save(partial_path, pnginfo=_metadata, compress_level=4)
+
+            _atomic_write(path, _write)
+            results.append({"filename": file, "subfolder": subfolder, "type": "output"})
+            counter += 1
+            print(f"[ModelPhaseSync] Saved image → {path}")
+
+        return {"ui": {"images": results}}
+
+
 NODE_CLASS_MAPPINGS = {
     "SyncBarrierN": SyncBarrierN,
     "PhaseUnload": PhaseUnload,
     "SaveConditioning": SaveConditioning,
     "LoadConditioning": LoadConditioning,
     "LoadLatentUpload": LoadLatentUpload,
+    "SaveLatentAtomic": SaveLatentAtomic,
+    "SaveImageAtomic": SaveImageAtomic,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -513,4 +671,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "SaveConditioning": "Save Conditioning",
     "LoadConditioning": "Load Conditioning",
     "LoadLatentUpload": "Load Latent (Upload)",
+    "SaveLatentAtomic": "Save Latent (Atomic)",
+    "SaveImageAtomic": "Save Image (Atomic)",
 }

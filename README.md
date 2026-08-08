@@ -14,8 +14,9 @@ Batched multi-prompt graphs (several CLIP encodes → several samplers → sever
 |------|----------------|
 | **Sync Barrier** | True execution barrier. Outputs only resolve once all *connected* inputs are ready, so Comfy finishes an entire phase before the next starts. Sockets auto-grow as you wire branches (up to 1000). |
 | **Phase Unload** | Optional companion. Passthrough that explicitly evicts models between phases so you are not fully dependent on ComfyUI’s heuristics. |
-| **Save / Load Conditioning** | Checkpoint CLIP `CONDITIONING` to disk (and reload it) so you can run text encode as its own workflow, then sample later without CLIP in memory. |
+| **Save / Load Conditioning** | Checkpoint CLIP `CONDITIONING` to disk (and reload it) so you can run text encode as its own workflow, then sample later without CLIP in memory. Writes are atomic (temp → `os.replace`) so watchers never see a half-written file. |
 | **Load Latent (Upload)** | Same idea for `.latent` files — built-in Load Latent has no upload button; this one does. Compatible with ComfyUI **Save Latent**. |
+| **Save Latent / Save Image (Atomic)** | Drop-in style saves that finish with `os.replace`, for processes that harvest files as soon as the path appears. |
 
 ### Before / after (3-image batch, Z-Image Turbo on MPS)
 
